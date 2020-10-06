@@ -2,8 +2,6 @@ import { Response, RequestHandler, NextFunction, Request } from "express";
 import { DecodedExpressRequest } from "entrypoint/web/util/DecodedExpressRequest";
 import UseCase from "core/definition/UseCase";
 
-
-
 // export enum Method {
 //   GET = "GET",
 //   Todo = "Todo",
@@ -47,14 +45,16 @@ export const awaitHandlerFactory = (middleware: RequestHandler) => {
 };
 
 abstract class BaseController<T extends UseCase = UseCase> {
-
   protected usecase: T;
 
   constructor(usecase: T) {
     this.usecase = usecase;
   }
-  protected abstract async processRequst(req: DecodedExpressRequest, res: Response, next: NextFunction): Promise<void>;
-
+  protected abstract async processRequst(
+    req: DecodedExpressRequest,
+    res: Response,
+    next: NextFunction
+  ): Promise<void>;
 
   public getRequestHandler(): RequestHandler {
     const handler = this.processRequst.bind(this);
@@ -71,27 +71,35 @@ abstract class BaseController<T extends UseCase = UseCase> {
   }
 
   protected fail(res: Response, error: Error | string): {} {
+    // eslint-disable-next-line no-console
     console.log(error);
     return res.status(500).json({
-      message: error.toString()
+      message: error.toString(),
     });
   }
 
-
   protected badRequest(res: Response, message?: string): {} {
-    return BaseController.jsonResponse(res, 400, { message: message || "bad requst" });
+    return BaseController.jsonResponse(res, 400, {
+      message: message || "bad requst",
+    });
   }
 
   protected unauthorized(res: Response, message?: string): {} {
-    return BaseController.jsonResponse(res, 401, { message: message || "Unauthorized" });
+    return BaseController.jsonResponse(res, 401, {
+      message: message || "Unauthorized",
+    });
   }
 
   protected forbidden(res: Response, message?: string): {} {
-    return BaseController.jsonResponse(res, 403, { message: message || "Forbidden" });
+    return BaseController.jsonResponse(res, 403, {
+      message: message || "Forbidden",
+    });
   }
 
   protected notFound(res: Response, message?: string): {} {
-    return BaseController.jsonResponse(res, 404, { message: message || "Not found" });
+    return BaseController.jsonResponse(res, 404, {
+      message: message || "Not found",
+    });
   }
 
   protected created(res: Response, payload: {} = {}): {} {
@@ -101,7 +109,6 @@ abstract class BaseController<T extends UseCase = UseCase> {
   protected static jsonResponse(res: Response, code: number, payload: {}): {} {
     return res.status(code).json(payload);
   }
-
 }
 
 export default BaseController;

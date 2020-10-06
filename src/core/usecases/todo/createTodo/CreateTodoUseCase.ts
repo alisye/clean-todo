@@ -1,13 +1,12 @@
 import UseCase from "core/definition/UseCase";
-import { Todo } from "core/entities";
-import Result from "core/definition/Result";
 import TodoEntityGateway from "core/usecases/todo/TodoEntityGateway";
 import CreateTodoRequestDTO from "core/usecases/todo/createTodo/CreateTodoRequestDTO";
 import CreateTodoResponseDTO from "core/usecases/todo/createTodo/CreateTodoResponseDTO";
 import { CreateTodoInvalidRequest } from "core/usecases/todo/createTodo/errors";
+import { Right, Left } from "purify-ts/Either";
 
-class CreateTodoUseCase implements UseCase<CreateTodoRequestDTO, CreateTodoResponseDTO>{
-
+class CreateTodoUseCase
+  implements UseCase<CreateTodoRequestDTO, CreateTodoResponseDTO> {
   private todosEntityGateway: TodoEntityGateway;
 
   constructor(todosEntityGateway: TodoEntityGateway) {
@@ -15,17 +14,14 @@ class CreateTodoUseCase implements UseCase<CreateTodoRequestDTO, CreateTodoRespo
   }
 
   async execute(request: CreateTodoRequestDTO): Promise<CreateTodoResponseDTO> {
-
-    if (!request || !request.title) {
-      return Result.fail(new CreateTodoInvalidRequest(request));
+    if (!request.title) {
+      return Left(new CreateTodoInvalidRequest(request));
     }
 
     const todo = await this.todosEntityGateway.createTodo(request);
 
-    return Result.ok<Todo>(todo);
-
+    return Right(todo);
   }
-
 }
 
 export default CreateTodoUseCase;

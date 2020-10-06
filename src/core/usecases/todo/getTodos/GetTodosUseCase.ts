@@ -1,13 +1,11 @@
 import UseCase from "core/definition/UseCase";
-import { Todo } from "core/entities";
-import Result from "core/definition/Result";
-import TodoEntityGateway from "core/usecases/todo/TodoEntityGateway";
-import GetTodosRequestDTO from "core/usecases/todo/getTodos/GetTodosRequestDTO";
-import GetTodosResponseDTO from "core/usecases/todo/getTodos/GetTodosResponseDTO";
+import { Right } from "purify-ts/Either";
+import { TodoEntityGateway } from "..";
+import GetTodosRequestDTO from "./GetTodosRequestDTO";
+import GetTodosResponseDTO from "./GetTodosResponseDTO";
 
-
-class GetTodosUseCase implements UseCase<GetTodosRequestDTO, GetTodosResponseDTO>{
-
+class GetTodosUseCase
+  implements UseCase<GetTodosRequestDTO, GetTodosResponseDTO> {
   private todosEntityGateway: TodoEntityGateway;
 
   constructor(todosEntityGateway: TodoEntityGateway) {
@@ -15,14 +13,11 @@ class GetTodosUseCase implements UseCase<GetTodosRequestDTO, GetTodosResponseDTO
   }
 
   async execute(request: GetTodosRequestDTO): Promise<GetTodosResponseDTO> {
-
     const { filterByTag } = request;
     const todos = await this.todosEntityGateway.getTodos(filterByTag);
 
-    return Result.ok<Todo[]>(todos || []);
-
+    return Right(todos);
   }
-
 }
 
 export default GetTodosUseCase;

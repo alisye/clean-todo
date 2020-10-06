@@ -1,5 +1,6 @@
 import { TodoEntityGateway, CreateTodoPayload } from "core/usecases/todo";
 import { Todo } from "core/entities";
+import { EitherAsync } from "purify-ts";
 
 class TodoInMemoryEntityGateway implements TodoEntityGateway {
   #todos: Todo[];
@@ -8,15 +9,23 @@ class TodoInMemoryEntityGateway implements TodoEntityGateway {
     this.#todos = [];
   }
 
-  async getTodo(todoId: string): Promise<Todo | undefined> {
-    const result = this.#todos.find(t => t.todoId === todoId);
-    return result;
+  getTodo(todoId: string): EitherAsync<undefined, Todo> {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    return EitherAsync(async ({ liftEither, fromPromise, throwE }) => {
+      const result = this.#todos.find((t) => t.todoId === todoId);
+      return result || throwE(undefined);
+    });
   }
 
-  async updateTodo(todo: Todo): Promise<Todo | undefined> {
-    const index = this.#todos.findIndex((t: Todo) => t.todoId === todo.todoId);
-    this.#todos[index] = todo;
-    return todo;
+  updateTodo(todo: Todo): EitherAsync<undefined, Todo> {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    return EitherAsync(async ({ liftEither, fromPromise, throwE }) => {
+      const index = this.#todos.findIndex(
+        (t: Todo) => t.todoId === todo.todoId
+      );
+      this.#todos[index] = todo;
+      return todo || throwE(undefined);
+    });
   }
 
   async createTodo(payload: CreateTodoPayload): Promise<Todo> {
@@ -24,7 +33,7 @@ class TodoInMemoryEntityGateway implements TodoEntityGateway {
       ...payload,
       isArchived: false,
       isDone: false,
-      todoId: Date.now.toString()
+      todoId: Date.now.toString(),
     };
 
     this.#todos.push(todo);
@@ -32,9 +41,9 @@ class TodoInMemoryEntityGateway implements TodoEntityGateway {
     return todo;
   }
 
-  async getTodos(tag?: string | undefined): Promise<Todo[] | undefined> {
+  async getTodos(tag?: string | undefined): Promise<Todo[]> {
     if (tag) {
-      return this.#todos.filter(t => t.tags.includes(tag));
+      return this.#todos.filter((t) => t.tags.includes(tag));
     }
     return this.#todos;
   }

@@ -1,35 +1,32 @@
 import { Response } from "express";
 import BaseController from "entrypoint/web/definitions/Controller";
 import { DecodedExpressRequest } from "entrypoint/web/util/DecodedExpressRequest";
-import { UseCaseError } from "core/definition";
 import {
   CreateTodoResponseDTO,
   CreateTodoInvalidRequest,
-  CreateTodoUseCase
+  CreateTodoUseCase,
 } from "core/usecases/todo";
+import { assertUnreachable } from "core/helpers";
 
-class CreateTodoController extends BaseController<CreateTodoUseCase>{
-
-  protected async processRequst(req: DecodedExpressRequest, res: Response): Promise<void> {
-
+class CreateTodoController extends BaseController<CreateTodoUseCase> {
+  protected async processRequst(
+    req: DecodedExpressRequest,
+    res: Response
+  ): Promise<void> {
     const result: CreateTodoResponseDTO = await this.usecase.execute(req.body);
 
-    if (result.isError) {
-      const error: UseCaseError = result.getError() as UseCaseError;
+    return result.caseOf({
+      Left: (error) => {
+        if (error instanceof CreateTodoInvalidRequest) {
+          this.badRequest(res, error.message);
+          return;
+        }
 
-      if (error instanceof CreateTodoInvalidRequest) {
-        this.badRequest(res, error.message);
-        return;
-      }
-
-      this.fail(res, error.message);
-      return;
-    }
-
-    this.ok(res, result);
-    return;
+        assertUnreachable(error);
+      },
+      Right: (todo) => this.ok(res, todo),
+    });
   }
-
 }
 
 export default CreateTodoController;
