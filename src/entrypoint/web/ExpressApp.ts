@@ -7,14 +7,13 @@ export interface AppConfig {
 }
 
 class ExpressApp {
-
   #app: Application;
   #config: AppConfig;
   #todoRouter: TodoRouter;
 
   constructor(config: AppConfig, todoRouter: TodoRouter) {
     this.#app = express();
-    this.#config = { port: 3000, ...config };
+    this.#config = { ...config };
     this.#todoRouter = todoRouter;
   }
 
@@ -26,7 +25,6 @@ class ExpressApp {
     app.use(this.#todoRouter.getRouter());
   }
 
-
   boot(): Application {
     if (!this.#app) {
       this.#app = express();
@@ -35,12 +33,12 @@ class ExpressApp {
     this.configApp();
 
     this.#app.listen(this.#config.port, () => {
+      // eslint-disable-next-line no-console
       console.log(`App listening on port ${this.#config.port}!`);
     });
 
     return this.#app;
   }
-
 }
 
 export default ExpressApp;

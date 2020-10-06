@@ -1,8 +1,13 @@
-import Result from "core/definition/Result";
 import { Todo } from "core/entities";
-import { TodoNotFound, UpdateTodoInvalidRequest, } from "core/usecases/todo/updateTodo/errors";
+import {
+  TodoNotFound,
+  UpdateTodoInvalidRequest,
+} from "core/usecases/todo/updateTodo/errors";
+import { Either } from "purify-ts/Either";
 
-
-type UpdateTodoResponseDTO = Result<Todo, TodoNotFound | UpdateTodoInvalidRequest>;
+type UpdateTodoResponseDTO = Either<
+  TodoNotFound | UpdateTodoInvalidRequest,
+  Todo
+>;
 
 export default UpdateTodoResponseDTO;

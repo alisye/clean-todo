@@ -9,7 +9,7 @@ class TodoInMemoryEntityGateway implements TodoEntityGateway {
   }
 
   async getTodo(todoId: string): Promise<Todo | undefined> {
-    const result = this.#todos.find(t => t.todoId === todoId);
+    const result = this.#todos.find((t) => t.todoId === todoId);
     return result;
   }
 
@@ -24,7 +24,7 @@ class TodoInMemoryEntityGateway implements TodoEntityGateway {
       ...payload,
       isArchived: false,
       isDone: false,
-      todoId: Date.now.toString()
+      todoId: Date.now.toString(),
     };
 
     this.#todos.push(todo);
@@ -32,9 +32,9 @@ class TodoInMemoryEntityGateway implements TodoEntityGateway {
     return todo;
   }
 
-  async getTodos(tag?: string | undefined): Promise<Todo[] | undefined> {
+  async getTodos(tag?: string | undefined): Promise<Todo[]> {
     if (tag) {
-      return this.#todos.filter(t => t.tags.includes(tag));
+      return this.#todos.filter((t) => t.tags.includes(tag));
     }
     return this.#todos;
   }

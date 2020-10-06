@@ -6,15 +6,13 @@ export interface CreateTodoPayload {
 }
 
 interface TodoEntityGateway {
-
   getTodo(todoId: string): Promise<Todo | undefined>;
 
   updateTodo(todo: Todo): Promise<Todo | undefined>;
 
   createTodo(payload: CreateTodoPayload): Promise<Todo>;
 
-  getTodos(tag?: string): Promise<Todo[] | undefined>;
-
+  getTodos(tag?: string): Promise<Todo[]>;
 }
 
 export default TodoEntityGateway;
